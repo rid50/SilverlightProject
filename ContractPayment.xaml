@@ -1,0 +1,255 @@
+﻿<UserControl x:Class="FaihaProject.ContractPayment" x:Name="ucContractPayment"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:FaihaProject.Resources"             
+    mc:Ignorable="d"
+    d:DesignHeight="768" d:DesignWidth="1024"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk" 
+    xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit" 
+    xmlns:datavis ="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit">
+
+    <UserControl.Resources>
+        <local:Resource x:Key="LocResources" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Style="{StaticResource MyBackground}" HorizontalAlignment="Stretch" ShowGridLines="False">
+        <Grid Margin="0" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <TextBlock x:Name="statusText" Foreground="Red" FontFamily="Verdana"/>
+        </Grid>
+
+        <toolkit:BusyIndicator Name="busyIndicator1"
+                BusyContent="{Binding Path=pleaseWait, Source={StaticResource LocResources}}">
+            <Grid x:Name="TopRoot" FlowDirection="RightToLeft" Margin="20,20,20,10" 
+                ShowGridLines="{Binding ShowGridLines, ElementName=LayoutRoot}"
+                VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4.2*" />
+                    <ColumnDefinition Width="0.2*" />
+                    <ColumnDefinition Width="2.8*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="170" />
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="VisualStates">
+                        <VisualState x:Name="ShowState">
+
+                            <Storyboard>
+                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="dgWorkOrderDetail"
+                                                   Storyboard.TargetProperty="(UIElement.Visibility)">
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:01">
+                                        <DiscreteObjectKeyFrame.Value>
+                                            <Visibility>Visible</Visibility>
+                                        </DiscreteObjectKeyFrame.Value>
+                                    </DiscreteObjectKeyFrame>
+                                </ObjectAnimationUsingKeyFrames>
+
+                            </Storyboard>
+
+                        </VisualState>
+                        <VisualState x:Name="HideState">
+                            <Storyboard>
+                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="dgWorkOrderDetail"
+                                                   Storyboard.TargetProperty="(UIElement.Visibility)">
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:01">
+                                        <DiscreteObjectKeyFrame.Value>
+                                            <Visibility>Collapsed</Visibility>
+                                        </DiscreteObjectKeyFrame.Value>
+                                    </DiscreteObjectKeyFrame>
+                                </ObjectAnimationUsingKeyFrames>
+
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <StackPanel x:Name="reportPanel" Grid.Row="1" Grid.Column="2" Grid.RowSpan="1" 
+                            Visibility="Collapsed" VerticalAlignment="Top" Width="240" Margin="0,10,0,0">
+                    <ScrollViewer x:Name="xps_viewer" VerticalAlignment="Top"
+                              Visibility="Collapsed" FlowDirection="LeftToRight" BorderThickness="2"
+                              Background="{x:Null}" Foreground="{x:Null}"
+                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                              Width="240" Height="324">
+                        <Grid Height="Auto" Width="Auto">
+                            <Canvas x:Name="page" Background="Transparent"  Width="Auto" Height="Auto"  
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                                <Canvas x:Name="pageContents" Background="White" >
+                                    <Canvas.RenderTransform>
+                                        <ScaleTransform x:Name="scaler" />
+                                    </Canvas.RenderTransform>
+                                </Canvas>
+                            </Canvas>
+                        </Grid>
+                    </ScrollViewer>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,4" >
+                        <Grid HorizontalAlignment="Stretch" Width="{Binding Width, ElementName=reportPanel}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Orientation="Vertical">
+                                <HyperlinkButton Name="Preview" HorizontalAlignment="Left" Click="Preview_Click" Grid.Column="0">
+                                    <TextBlock Text="{Binding Path=viewPrintInBrowser, Source={StaticResource LocResources}}" 
+                                                   Foreground="#FF0000FF" TextDecorations="Underline" />
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip Content="{Binding Path=bePatient, Source={StaticResource LocResources}}"/>
+                                    </ToolTipService.ToolTip>
+                                </HyperlinkButton>
+                                <TextBlock Text = "{Binding Path=viewPrintInBrowser2, Source={StaticResource LocResources}}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                                <TextBlock x:Name="pageInfo"/>
+                                <TextBlock Text="{Binding Path=pages, Source={StaticResource LocResources}}" Margin="4,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
+                    <TextBlock Text="{Binding Path=contractPayment, Source={StaticResource LocResources}}" 
+                           HorizontalAlignment="Left"
+                           FontWeight="Bold" FontSize="24" Padding="20,0,0,0"/>
+
+                    <StackPanel.Effect>
+                        <DropShadowEffect BlurRadius="8" Color="#FFFFFFFF" Direction="315" Opacity="1" ShadowDepth="5"/>
+                    </StackPanel.Effect>
+                </StackPanel>
+
+                <toolkit:DataForm Name="dfContract" Grid.Column="0" Grid.Row="0" Visibility="Collapsed"
+                             FlowDirection="{Binding FlowDirection, ElementName=TopRoot}" Background="Transparent"
+                             CommandButtonsVisibility="Navigation" CurrentItemChanged="dfContract_CurrentItemChanged"
+                             HorizontalAlignment="Stretch" ContentLoaded= "dfContract_ContentLoaded">
+
+                    <toolkit:DataForm.Effect>
+                        <DropShadowEffect BlurRadius="8" Color="#FFFFFFFF" Direction="315" Opacity="1" ShadowDepth="5"/>
+                    </toolkit:DataForm.Effect>
+
+                    <!--toolkit:DataForm.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Stretch"/>
+                                </DataTemplate>
+                            </toolkit:DataForm.HeaderTemplate-->
+                    <Grid ShowGridLines="{Binding ShowGridLines, ElementName=LayoutRoot}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.68*" />
+                            <ColumnDefinition Width="0.32*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!--StackPanel Orientation="Vertical" VerticalAlignment="Top"-->
+                        <toolkit:DataField Label="{StaticResource contractId}" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=ContractID}" FontWeight="Normal" />
+                                <TextBlock Text="{Binding Path=ClassID}" Margin="4,0" FontWeight="Normal" />
+                            </StackPanel>
+                        </toolkit:DataField>
+
+                        <!--StackPanel Orientation="Horizontal"-->
+                        <toolkit:DataField Label="{StaticResource contractTitle}" FontWeight="Bold" Grid.Row="1" Grid.Column="0" Margin="0">
+                            <TextBlock Text="{Binding Path=ContractTitle}" FontWeight="Normal" />
+                        </toolkit:DataField>
+
+                        <toolkit:DataField Label="{StaticResource contractValue}" FontWeight="Bold" Grid.Row="1" Grid.Column="1" Margin="0">
+                            <TextBlock Text="{Binding Path=ContractValue, StringFormat='#,###.000'}" FontWeight="Normal"/>
+                        </toolkit:DataField>
+
+                        <toolkit:DataField Label="{StaticResource tenderTitle}" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Margin="0">
+                            <TextBlock Text="{Binding Path=TenderTitle}" FontWeight="Normal" />
+                        </toolkit:DataField>
+
+                        <toolkit:DataField Label="{StaticResource contractorName}" FontWeight="Bold" Grid.Row="3" Grid.Column="0" Margin="0">
+                            <TextBlock Text="{Binding Path=ContractorName}" FontWeight="Normal"/>
+                        </toolkit:DataField>
+
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Margin="20,4,0,0">
+                            <TextBlock Text="{StaticResource contractStartDate}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding ContractStartDate, StringFormat='dd/MM/yyyy'}" Margin="4,0,0,0" FontWeight="Normal" />
+
+                            <TextBlock Text="{StaticResource contractEndDate}" Margin="8,0,0,0" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding ContractEndDate, StringFormat='dd/MM/yyyy'}" Margin="4,0,0,0" FontWeight="Normal" />
+
+                            <TextBlock Text="{StaticResource area}" Margin="20,0,0,0" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Area}" Margin="4,0,0,0" FontWeight="Normal" />
+                        </StackPanel>
+
+
+                        <!--/StackPanel-->
+                    </Grid>
+                </toolkit:DataForm>
+
+                <!--StackPanel x:Name="StackP" VerticalAlignment="Top" Margin="0,10,0,0"
+                            Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"-->
+
+                
+                <toolkit:Accordion Name="accordionControl" Grid.Column="0" Grid.Row="1" Height="351"
+                                    Visibility="Collapsed" Margin="0,10,0,0"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                    <toolkit:Accordion.Effect>
+                        <DropShadowEffect BlurRadius="8" Color="#FFFFFFFF" Direction="315" Opacity="1" ShadowDepth="5"/>
+                    </toolkit:Accordion.Effect>
+
+                    <toolkit:AccordionItem Header="{Binding Path=tabularPresentation, Source={StaticResource LocResources}}"
+                                           HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                        <sdk:DataGrid Name="dgPayment" Height="300" AutoGenerateColumns="False"
+                                FlowDirection="{Binding FlowDirection, ElementName=TopRoot}" Visibility="Collapsed" Margin="0"
+                                IsReadOnly="True" ItemsSource="{Binding}" VerticalAlignment="Top">
+                            <sdk:DataGrid.Columns>
+                                <sdk:DataGridTextColumn Header="{StaticResource paymentNo}" Binding="{Binding PaymentNo}" />
+                                <sdk:DataGridTextColumn Header="{StaticResource paymentDate}" Binding="{Binding PaymentDate, StringFormat=\{0:d\}}" />
+                                <sdk:DataGridTextColumn Header="{StaticResource paymentValue}" Binding="{Binding PaymentValue, StringFormat='#,###.000'}" />
+                                <sdk:DataGridTextColumn Header="{StaticResource runningSum}" Binding="{Binding RunningSum, StringFormat='#,###.000'}" />
+                                <sdk:DataGridTextColumn Header="{StaticResource remainingValue}" Binding="{Binding RemainingValue, StringFormat='#,###.000'}" />
+                                <sdk:DataGridTextColumn Header="{StaticResource percentPaid}" Binding="{Binding PercentPaid, StringFormat=\{0:p\}}" />
+                            </sdk:DataGrid.Columns>
+                        </sdk:DataGrid>
+                    </toolkit:AccordionItem>
+
+                    <toolkit:AccordionItem Name="accordionChartItem"
+                                            Header="{Binding Path=chartPresentation, Source={StaticResource LocResources}}"
+                                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                        <StackPanel FlowDirection="LeftToRight">
+                            <charting:Chart Name="chartControl" Height="300" 
+                                        Title="{Binding Path=runningPaymentsPerformance, Source={StaticResource LocResources}}">
+                                <charting:Chart.TitleStyle>
+                                    <Style TargetType="datavis:Title">
+                                        <Setter Property="FontSize" Value="20" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Setter Property="Margin" Value="0,10,0,10" />
+                                    </Style>
+                                </charting:Chart.TitleStyle>
+
+                                <charting:Chart.LegendStyle>
+                                    <Style TargetType="datavis:Legend">
+                                        <Setter Property="Width" Value="0"/>
+                                        <Setter Property="Height" Value="0"/>
+                                    </Style>
+                                </charting:Chart.LegendStyle>
+                                <charting:Chart.Series>
+                                    <charting:LineSeries ItemsSource="{Binding}"
+                                                IndependentValueBinding="{Binding PaymentNo}"
+                                                DependentValueBinding="{Binding RunningSum}">
+                                    </charting:LineSeries>
+                                </charting:Chart.Series>
+                            </charting:Chart>
+                        </StackPanel>
+                    </toolkit:AccordionItem>
+                </toolkit:Accordion>
+
+                <!--/StackPanel-->
+            </Grid>
+        </toolkit:BusyIndicator>
+    </Grid>
+
+</UserControl>

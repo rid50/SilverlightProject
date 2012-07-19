@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="FaihaProject.Dal" namespace="FaihaProject.Dal.Entities">
+  <class name="Contract" table="`Contract List`" lazy="true">
+    <id name="ContractID" type="String" column="`Contract No`" length="20"/>
+
+    <bag name="WorkOrders" cascade="save-update" inverse="true" lazy="true" fetch="join">
+      <key column="`Contract No`"/>
+      <one-to-many class="WorkOrder"/>
+    </bag>
+
+    <bag name="Payments" cascade="save-update" inverse="true" lazy="true" fetch="join">
+      <key column="`Contract No`"/>
+      <one-to-many class="Payment"/>
+    </bag>
+
+    <property name="ContractorID" column="`Contractor Code`" type="int"/>
+    <many-to-one name="Contractor" column="`Contractor Code`"/>
+    <property name="ClassID" column="`Class ID`" type="String" length="2"/>
+    <many-to-one name="Clazz" column="`Class ID`"/>
+
+    <property name="ContractTitle" type="String" column="`Contract Title`" length="50"/>
+    <property name="TenderTitle" type="String" column="`Tender Title`" length="100"/>
+    <property name="Area" column="`Area No`" type="String" length="7"/>
+    <property name="ContractStartDate" column="`Contract Start Date`" type="DateTime"/>
+    <property name="ContractEndDate" column="`Contract End Date`" type="DateTime"/>
+    
+<!--  SQL Server  -->    
+    <property name="ContractValue" type="Decimal" column="`Contract Value`"
+              formula="`Contract Value`+IsNull(`Extention Value`,0)"/>
+
+<!--  MS Access
+    <property name="ContractValue" type="Decimal" column="`Contract Value`"
+              formula="`Contract Value`+IIf(IsNull(`Extention Value`),0,`Extention Value`)"/>
+-->
+
+<!--  SQL Server  -->
+    <property name="ContractPeriod" type="short"
+              formula="DATEDIFF(day, `Contract Start Date`, `Contract End Date`)"/>
+
+<!--  MS Access
+    <property name="ContractPeriod" type="short"
+              formula="`Contract End Date` - `Contract Start Date`"/>
+-->
+
+    <property name="Discount" column="Discount" type="Decimal"/>
+    <property name="ExtensionStartDate" column="`Extention Start Date`" type="DateTime"/>
+    <property name="ExtensionEndDate" column="`Extention End Date`" type="DateTime"/>
+    <property name="ExtensionValue" column="`Extention Value`" type="Decimal"/>
+
+  </class>
+</hibernate-mapping>
